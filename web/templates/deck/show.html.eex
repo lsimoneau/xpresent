@@ -1,0 +1,9 @@
+<h2><%= @deck.name %></h2>
+
+<%= for slide <- @deck.slides do %>
+  <section class="slide-content">
+    <%= slide.content %>
+  </section>
+<% end %>
+
+<%= link "Back", to: deck_path(@conn, :index) %>
