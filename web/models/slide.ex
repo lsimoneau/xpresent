@@ -8,7 +8,7 @@ defmodule Xpresent.Slide do
     timestamps
   end
 
-  @required_fields ~w(content)
+  @required_fields ~w(content deck_id)
   @optional_fields ~w()
 
   @doc """

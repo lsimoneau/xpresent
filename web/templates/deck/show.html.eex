@@ -6,4 +6,4 @@
   </section>
 <% end %>
 
-<%= link "Back", to: deck_path(@conn, :index) %>
+<%= link "Add a slide", to: deck_slide_path(@conn, :new, @deck) %>

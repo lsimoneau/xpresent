@@ -32,9 +32,9 @@ defmodule Xpresent.DeckControllerTest do
   end
 
   test "shows chosen resource", %{conn: conn} do
-    deck = Repo.insert! %Deck{}
+    deck = Repo.insert! %Deck{name: "Example deck"}
     conn = get conn, deck_path(conn, :show, deck)
-    assert html_response(conn, 200) =~ "Show deck"
+    assert html_response(conn, 200) =~ "Example deck"
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do

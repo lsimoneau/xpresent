@@ -1,0 +1,6 @@
+<h2>New slide</h2>
+
+<%= render "form.html", changeset: @changeset,
+                        action: deck_slide_path(@conn, :create, @deck_id) %>
+
+<%= link "Back", to: deck_slide_path(@conn, :index, @deck_id) %>
