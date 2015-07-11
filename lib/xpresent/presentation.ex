@@ -1,4 +1,6 @@
 defmodule Xpresent.Presentation do
+  defstruct deck_id: nil, slide_count: nil, process: nil
+
   def start_link do
     Agent.start_link(fn -> 1 end)
   end
