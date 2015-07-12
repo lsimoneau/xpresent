@@ -16,21 +16,35 @@ defmodule Xpresent.Registry do
   ## Server callbacks
 
   def init(:ok) do
-    { :ok, HashDict.new }
+    names = HashDict.new
+    refs = HashDict.new
+    { :ok, {names,refs} }
   end
 
-  def handle_call({:lookup, name}, _from, dict) do
-    case HashDict.fetch(dict, name) do
-      :error -> { :reply, :error, dict }
-      {:ok, pres} -> { :reply, {:ok, pres.process}, dict }
+  def handle_call({:lookup, name}, _from, {names, _} = state) do
+    case HashDict.fetch(names, name) do
+      :error -> { :reply, :error, state }
+      {:ok, pres} -> { :reply, {:ok, pres.process}, state }
     end
   end
 
-  def handle_call({:start_presentation, deck_id}, _from, dict) do
-    name = new_name(dict)
-    {:ok, process} = Xpresent.Presentation.start_link
-    new_state = HashDict.put(dict, name, %Xpresent.Presentation{deck_id: deck_id, process: process})
-    {:reply, name, new_state}
+  def handle_call({:start_presentation, deck_id}, _from, {names, refs}) do
+    name = new_name(names)
+    {:ok, pid} = Xpresent.Presentation.start_link
+    ref = Process.monitor(pid)
+    refs = HashDict.put(refs, ref, name)
+    names = HashDict.put(names, name, %Xpresent.Presentation{deck_id: deck_id, process: pid})
+    {:reply, name, {names, refs}}
+  end
+
+  def handle_info({:DOWN, ref, :process, _pid, _reason}, {names, refs}) do
+    { name, refs } = HashDict.pop(refs, ref)
+    names = HashDict.delete(names, name)
+    {:noreply, {names,refs}}
+  end
+
+  def handle_info(_msg, state) do
+    {:noreply, state}
   end
 
   defp new_name(dict) do
